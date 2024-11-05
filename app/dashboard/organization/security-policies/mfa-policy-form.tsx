@@ -139,6 +139,33 @@ export function MfaPolicyForm({ organization }: Props) {
                   name="webauthn-roaming"
                 />
               </div>
+
+              <div className="flex justify-between space-x-1 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/5 hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                <Label
+                  className="flex items-center space-x-4"
+                  htmlFor="sms"
+                >
+                  <div className="rounded-md border bg-secondary p-3">
+                    <KeySquareIcon className="size-5" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <div>SMS</div>
+                    <div className="text-muted-foreground">
+                    Users will receive a phone message with a verification code.
+                    </div>
+                  </div>
+                </Label>
+
+                <Checkbox
+                  defaultChecked={organization.mfaPolicy.providers.includes(
+                    "sms"
+                  )}
+                  value="sms"
+                  id="sms"
+                  className="peer"
+                  name="sms"
+                />
+              </div>
             </div>
           </div>
         </CardContent>

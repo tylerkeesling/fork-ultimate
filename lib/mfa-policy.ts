@@ -10,4 +10,4 @@ export const DEFAULT_MFA_POLICY: MfaPolicy = {
   skipForDomains: [],
 }
 
-export const SUPPORTED_PROVIDERS = ["otp", "webauthn-roaming"]
+export const SUPPORTED_PROVIDERS = ["sms", "email", "otp", "webauthn-roaming"]

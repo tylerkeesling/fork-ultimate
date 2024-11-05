@@ -6,6 +6,10 @@ const sidebarNavItems = [
     href: "/dashboard/account/profile",
   },
   {
+    title: "Tokens",
+    href: "/dashboard/account/tokens",
+  },
+  {
     title: "Security",
     href: "/dashboard/account/security",
   },
