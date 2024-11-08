@@ -98,7 +98,6 @@ export async function getUserSessions() {
       user_id: userId,
     })
 
-    console.log(sessions)
     return {
       sessions,
       status,

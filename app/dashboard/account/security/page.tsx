@@ -47,7 +47,7 @@ export default appClient.withPageAuthRequired(
         />
 
         <MFAEnrollmentForm factors={filteredFactors} />
-        <UserSessions user={session?.user} onFetch={getUserSessions} />
+        <UserSessions user={session!.user} onFetch={getUserSessions} />
       </div>
     )
   },
