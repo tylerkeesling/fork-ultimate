@@ -48,8 +48,9 @@ const onDelete1 = async (sessionId: string) => {
   const response = await fetch(`/api/sessions/${sessionId}`, {
     method: "DELETE",
   })
-  const data = await response.json()
-  return data
+  const status = response.status
+  const id = await response.json()
+  return { status, id }
 }
 
 export default function UserSessions({
