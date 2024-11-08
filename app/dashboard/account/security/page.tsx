@@ -2,7 +2,6 @@ import { appClient, managementClient } from "@/lib/auth0"
 import { SUPPORTED_PROVIDERS } from "@/lib/mfa-policy"
 import { PageHeader } from "@/components/page-header"
 
-import { getUserSessions } from "./actions"
 import { MFAEnrollmentForm } from "./mfa-enrollment-form"
 import UserSessions from "./user-sessions"
 
@@ -11,10 +10,10 @@ export default appClient.withPageAuthRequired(
     const session = await appClient.getSession()
     const userId = session?.user.sub
     const { data: factors } = await managementClient.guardian.getFactors()
-    const response = await managementClient.users.getAuthenticationMethods({
-      id: userId,
-    })
-    const { data: enrollments } = response
+    const { data: enrollments } =
+      await managementClient.users.getAuthenticationMethods({
+        id: userId,
+      })
 
     const filteredFactors = factors
       .filter((factor: any) => {
@@ -47,7 +46,11 @@ export default appClient.withPageAuthRequired(
         />
 
         <MFAEnrollmentForm factors={filteredFactors} />
-        <UserSessions user={session!.user} onFetch={getUserSessions} />
+        <UserSessions
+          user={session!.user}
+          // onFetch={fetchUserSessions}
+          // onDelete={deleteUserSession}
+        />
       </div>
     )
   },

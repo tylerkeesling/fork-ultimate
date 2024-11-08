@@ -28,11 +28,28 @@ interface KeyValueMap {
 type UserSessionsProps = {
   user: KeyValueMap
   sessions?: KeyValueMap[]
-  onFetch: () => Promise<{ sessions?: KeyValueMap[]; status: number }>
-  onDelete: (sessionId: string) => Promise<{
+  onFetch?: () => Promise<{ sessions?: KeyValueMap[]; status: number }>
+  onDelete?: (sessionId: string) => Promise<{
     id?: string
     status: number
   }>
+}
+
+const onFetch1 = async () => {
+  const response = await fetch("/api/sessions", {
+    method: "GET",
+  })
+  const status = response.status
+  const sessions = await response.json()
+  return { status, sessions }
+}
+
+const onDelete1 = async (sessionId: string) => {
+  const response = await fetch(`/api/sessions/${sessionId}`, {
+    method: "DELETE",
+  })
+  const data = await response.json()
+  return data
 }
 
 export default function UserSessions({
@@ -52,7 +69,7 @@ export default function UserSessions({
 
   const handleRevokeSession = (sessionId: string) => async () => {
     setIsRevokingSession(sessionId)
-    const response = await onDelete(sessionId)
+    const response = await onDelete1(sessionId)
 
     if (response.status !== 200) {
       setIsRevokingSession(null)
@@ -77,7 +94,7 @@ export default function UserSessions({
   const handleFetchSessions = useCallback(
     async function handleFetchSessions() {
       setFetching(true)
-      const response = await onFetch()
+      const response = await onFetch1()
 
       if (response.status !== 200) {
         return setFetching(false)
@@ -86,7 +103,7 @@ export default function UserSessions({
       setCurrentSessions(response.sessions)
       setFetching(false)
     },
-    [onFetch]
+    [onFetch1]
   )
 
   useEffect(() => {
