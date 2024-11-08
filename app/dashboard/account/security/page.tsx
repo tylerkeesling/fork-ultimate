@@ -2,7 +2,9 @@ import { appClient, managementClient } from "@/lib/auth0"
 import { SUPPORTED_PROVIDERS } from "@/lib/mfa-policy"
 import { PageHeader } from "@/components/page-header"
 
+import { getUserSessions } from "./actions"
 import { MFAEnrollmentForm } from "./mfa-enrollment-form"
+import UserSessions from "./user-sessions"
 
 export default appClient.withPageAuthRequired(
   async function Profile() {
@@ -45,6 +47,7 @@ export default appClient.withPageAuthRequired(
         />
 
         <MFAEnrollmentForm factors={filteredFactors} />
+        <UserSessions user={session?.user} onFetch={getUserSessions} />
       </div>
     )
   },

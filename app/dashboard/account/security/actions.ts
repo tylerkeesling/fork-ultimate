@@ -81,3 +81,31 @@ export async function deleteEnrollment(formData: FormData) {
     }
   }
 }
+
+export async function getUserSessions() {
+  const session = await appClient.getSession()
+
+  if (!session) {
+    return redirect("/api/auth/login")
+  }
+
+  try {
+    const userId = session?.user.sub
+    const {
+      data: { sessions },
+      status,
+    } = await managementClient.users.getSessions({
+      user_id: userId,
+    })
+
+    console.log(sessions)
+    return {
+      sessions,
+      status,
+    }
+  } catch {
+    return {
+      error: "Failed to get user sessions",
+    }
+  }
+}
