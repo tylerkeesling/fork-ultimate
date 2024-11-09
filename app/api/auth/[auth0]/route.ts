@@ -4,7 +4,7 @@ import { HandlerError } from "@auth0/nextjs-auth0"
 
 import { appClient } from "@/lib/auth0"
 
-export const GET = appClient.handleAuth({
+const handler = appClient.handleAuth({
   login: appClient.handleLogin((request) => {
     // NOTE: this is a typing issue. The request Object here is of type NextRequest (not NextApiRequest)
     // as this is a route handler.
@@ -35,3 +35,5 @@ export const GET = appClient.handleAuth({
     )
   },
 })
+
+export { handler as GET, handler as POST }
