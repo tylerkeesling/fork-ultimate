@@ -27,9 +27,7 @@ export const appClient = initAuth0({
   baseURL: process.env.APP_BASE_URL,
   issuerBaseURL: `https://${process.env.NEXT_PUBLIC_AUTH0_DOMAIN}`,
   secret: process.env.SESSION_ENCRYPTION_SECRET,
-  session: {
+  backchannelLogout: {
     store: new Store(),
-    name: 'customAppSession'
   },
-  backchannelLogout: true
 })

@@ -14,7 +14,9 @@ class Store implements SessionStore {
   }
 
   async set(id: string, val: any): Promise<void> {
-    await this.store.set(id, val)
+    if (!id.includes("sub")) {
+      await this.store.set(id, val)
+    }
     return Promise.resolve()
   }
 
