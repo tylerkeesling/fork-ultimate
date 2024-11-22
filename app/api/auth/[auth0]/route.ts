@@ -20,7 +20,7 @@ const handler = appClient.handleAuth({
         organization,
         invitation,
       },
-      returnTo: "/dashboard",
+      returnTo: "/dashboard/account/tokens",
     }
   }),
   signup: appClient.handleLogin({
