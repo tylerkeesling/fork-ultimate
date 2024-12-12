@@ -20,7 +20,7 @@ const handler = appClient.handleAuth({
         invitation,
         screen_hint,
       },
-      returnTo: "/dashboard/account/tokens",
+      returnTo: "/dashboard/account/profile",
     }
   }),
   signup: appClient.handleLogin({
