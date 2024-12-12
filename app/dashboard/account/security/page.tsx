@@ -9,11 +9,17 @@ export default appClient.withPageAuthRequired(
   async function Profile() {
     const session = await appClient.getSession()
     const userId = session?.user.sub
-    const { data: factors } = await managementClient.guardian.getFactors()
-    const { data: enrollments } =
-      await managementClient.users.getAuthenticationMethods({
-        id: userId,
-      })
+
+    const [factorsResponse, enrollmentsResponse, sessionsResponse] =
+      await Promise.all([
+        managementClient.guardian.getFactors(),
+        managementClient.users.getAuthenticationMethods({ id: userId }),
+        managementClient.users.getSessions({ user_id: userId }),
+      ])
+
+    const factors = factorsResponse.data
+    const enrollments = enrollmentsResponse.data
+    const sessions = sessionsResponse.data.sessions
 
     const filteredFactors = factors
       .filter((factor: any) => {
@@ -46,11 +52,7 @@ export default appClient.withPageAuthRequired(
         />
 
         <MFAEnrollmentForm factors={filteredFactors} />
-        <UserSessions
-          user={session!.user}
-          // onFetch={fetchUserSessions}
-          // onDelete={deleteUserSession}
-        />
+        <UserSessions user={session!.user} sessions={sessions} />
       </div>
     )
   },

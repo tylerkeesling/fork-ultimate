@@ -1,12 +1,10 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
 import moment from "moment"
 import { toast } from "sonner"
 import { UAParser } from "ua-parser-js"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -16,10 +14,9 @@ import {
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Spinner } from "@/components/spinner"
+import { SubmitButton } from "@/components/submit-button"
 
-// import { Toaster } from "@/components/ui/toaster"
-// import { useToast } from "@/components/ui/use-toast"
+import { deleteSession } from "./actions"
 
 interface KeyValueMap {
   [key: string]: any
@@ -28,113 +25,19 @@ interface KeyValueMap {
 type UserSessionsProps = {
   user: KeyValueMap
   sessions?: KeyValueMap[]
-  onFetch?: () => Promise<{ sessions?: KeyValueMap[]; status: number }>
-  onDelete?: (sessionId: string) => Promise<{
-    id?: string
-    status: number
-  }>
 }
 
-const onFetch1 = async () => {
-  const response = await fetch("/api/sessions", {
-    method: "GET",
-  })
-  const status = response.status
-  const sessions = await response.json()
-  return { status, sessions }
-}
-
-const onDelete1 = async (sessionId: string) => {
-  const response = await fetch(`/api/sessions/${sessionId}`, {
-    method: "DELETE",
-  })
-  const status = response.status
-  const id = await response.json()
-  return { status, id }
-}
-
-export default function UserSessions({
-  user,
-  sessions,
-  onFetch,
-  onDelete,
-}: UserSessionsProps) {
-  //   const { toast } = useToast()
-  const [currentSessions, setCurrentSessions] = useState<
-    KeyValueMap[] | undefined
-  >(sessions)
-  const [fetching, setFetching] = useState(false)
-  const [isRevokingSession, setIsRevokingSession] = useState<string | null>(
-    null
-  )
-
-  const handleRevokeSession = (sessionId: string) => async () => {
-    setIsRevokingSession(sessionId)
-    const response = await onDelete1(sessionId)
-
-    if (response.status !== 200) {
-      setIsRevokingSession(null)
-
-      return toast.error(
-        "There was a problem removing the session. Try and later."
-      )
-      //   return toast({
-      //     title: "Info",
-      //     description:
-      //       "There was a problem removing the session. Try again later.",
-      //   })
-    }
-
-    const { id } = response
-
-    setCurrentSessions((prev) => prev?.filter((session) => session.id !== id))
-
-    setIsRevokingSession(null)
-  }
-
-  const handleFetchSessions = useCallback(
-    async function handleFetchSessions() {
-      setFetching(true)
-      const response = await onFetch1()
-
-      if (response.status !== 200) {
-        return setFetching(false)
-      }
-
-      setCurrentSessions(response.sessions)
-      setFetching(false)
-    },
-    [onFetch1]
-  )
-
-  useEffect(() => {
-    ;(async () => {
-      if (!sessions) {
-        await handleFetchSessions()
-      }
-    })()
-  }, [sessions])
-
+export default function UserSessions({ user, sessions }: UserSessionsProps) {
   return (
     <>
-      {/* <Toaster /> */}
       <Card>
         <CardHeader>
           <CardTitle>Active Sessions</CardTitle>
-          <CardDescription>View your active sessions.</CardDescription>
+          <CardDescription>Manage the active sessions for your account.</CardDescription>
         </CardHeader>
 
         <CardContent className="grid gap-6 p-4 pt-0 md:p-6 md:pt-0">
-          {fetching && (
-            <div className="justify-left flex w-full items-center">
-              <Spinner />
-              <span className="text-sm text-muted-foreground">
-                Retrieving your active sessions...
-              </span>
-            </div>
-          )}
-
-          {!currentSessions && !fetching && (
+          {!sessions && (
             <div className="flex flex-col gap-6">
               <Separator />
               <div className="flex items-center justify-between space-x-2">
@@ -148,8 +51,8 @@ export default function UserSessions({
             </div>
           )}
 
-          {currentSessions &&
-            currentSessions
+          {sessions &&
+            sessions
               .sort(({ id }) => (id === user.sid ? -1 : 1))
               .map((session, idx) => {
                 const { id } = session
@@ -210,15 +113,30 @@ export default function UserSessions({
                         </p>
                       </Label>
                       <div className="flex items-center justify-end space-x-24 md:min-w-24">
-                        <Button
-                          className="h-fit min-w-24"
-                          variant="outline"
-                          onClick={handleRevokeSession(id)}
-                          disabled={isRevokingSession === id}
+                        <form
+                          action={async (formData: FormData) => {
+                            const { error } = await deleteSession(formData)
+
+                            if (error) {
+                              toast.error(error)
+                              return
+                            }
+
+                            toast.success("Session signed out successfully.")
+                          }}
                         >
-                          {isRevokingSession === id && <Spinner />}
-                          Sign out
-                        </Button>
+                          <input
+                            type="hidden"
+                            name="session_id"
+                            value={session.id}
+                          />
+                          <SubmitButton
+                            className="h-fit min-w-24"
+                            variant="outline"
+                          >
+                            Remove
+                          </SubmitButton>
+                        </form>
                       </div>
                     </div>
                   </div>
