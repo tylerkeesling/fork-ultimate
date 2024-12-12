@@ -12,11 +12,13 @@ const handler = appClient.handleAuth({
     // @ts-ignore
     const searchParams = request.nextUrl.searchParams
     const invitation = searchParams.get("invitation")
+    const screen_hint = searchParams.get("screen_hint")
 
     return {
       authorizationParams: {
         // if the user is accepting an invite, we need to forward it to Auth0
         invitation,
+        screen_hint,
       },
       returnTo: "/dashboard/account/tokens",
     }

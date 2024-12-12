@@ -35,7 +35,7 @@ export default async function Navbar() {
                 </li>
                 <li>
                   <div className="md:right-8 md:top-8">
-                    <a className="" href="/api/auth/login">
+                    <a className="" href="/api/auth/login?screen_hint=signup">
                       <SubmitButton className="text-lg">
                         Get Started <ArrowRightIcon className="ml-1.5 size-5" />
                       </SubmitButton>
