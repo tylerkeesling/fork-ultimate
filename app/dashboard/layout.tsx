@@ -7,7 +7,6 @@ import { appClient, managementClient } from "@/lib/auth0"
 import { Button } from "@/components/ui/button"
 import { Auth0Logo } from "@/components/auth0-logo"
 import { ModeToggle } from "@/components/mode-toggle"
-import { OrganizationSwitcher } from "@/components/organization-switcher"
 import { UserNav } from "@/components/user-nav"
 
 export default async function DashboardLayout({
@@ -22,29 +21,10 @@ export default async function DashboardLayout({
     redirect("/api/auth/login")
   }
 
-  const { data: orgs } = await managementClient.users.getUserOrganizations({
-    id: session.user.sub,
-  })
-
-  // if the user does not belong to any organizations, redirect to onboarding
-  if (!orgs.length) {
-    redirect("/onboarding/create")
-  }
-
   return (
     <UserProvider>
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-2 py-4 sm:px-8">
         <div className="flex items-center space-x-6">
-          <OrganizationSwitcher
-            organizations={orgs.map((o) => ({
-              id: o.id,
-              slug: o.name,
-              displayName: o.display_name!,
-              logoUrl: o.branding?.logo_url,
-            }))}
-            currentOrgId={session.user.org_id}
-          />
-
           <Link
             href="/dashboard"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -54,11 +34,6 @@ export default async function DashboardLayout({
         </div>
 
         <div className="flex flex-row gap-x-4">
-          <Button variant="ghost" asChild className="px-2 py-2">
-            <Link href="/dashboard/organization/general">
-              <SettingsIcon className="h-[1.2rem] w-[1.2rem]" />
-            </Link>
-          </Button>
           <UserNav />
         </div>
       </nav>

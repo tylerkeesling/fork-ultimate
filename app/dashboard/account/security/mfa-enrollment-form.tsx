@@ -75,42 +75,43 @@ const factorsMeta: {
 }
 
 function openPopupWindow(popupOptions: IPopupWindow): Window | null {
-  {
-    const dualScreenLeft =
-      window.screenLeft !== undefined ? window.screenLeft : window.screenX
-    const dualScreenTop =
-      window.screenTop !== undefined ? window.screenTop : window.screenY
+  const dualScreenLeft = window.screenLeft ?? window.screenX
+  const dualScreenTop = window.screenTop ?? window.screenY
 
-    const width = window.innerWidth
-      ? window.innerWidth
-      : document.documentElement.clientWidth
-        ? document.documentElement.clientWidth
-        : screen.width
-    const height = window.innerHeight
-      ? window.innerHeight
-      : document.documentElement.clientHeight
-        ? document.documentElement.clientHeight
-        : screen.height
+  const width =
+    window.innerWidth || document.documentElement.clientWidth || screen.width
+  const height =
+    window.innerHeight || document.documentElement.clientHeight || screen.height
 
-    const systemZoom = width / window.screen.availWidth
-    const left = (width - popupOptions.width) / 2 / systemZoom + dualScreenLeft
-    const top = (height - popupOptions.height) / 2 / systemZoom + dualScreenTop
-    const newWindow = window.open(
-      popupOptions.url,
-      popupOptions.title,
-      `scrollbars=${popupOptions.scrollbars ? "yes" : "no"},
-      width=${popupOptions.width / systemZoom},
-      height=${popupOptions.height / systemZoom},
-      top=${top},
-      left=${left}
-      `
-    )
-    newWindow!.opener = null
+  const systemZoom = window.devicePixelRatio || 1
+
+  const defaultWidth = 600
+  const defaultHeight = 400
+
+  const popupWidth = Math.min(popupOptions.width || defaultWidth, width)
+  const popupHeight = Math.min(popupOptions.height || defaultHeight, height)
+
+  const left = (width - popupWidth) / 2 / systemZoom + dualScreenLeft
+  const top = (height - popupHeight) / 2 / systemZoom + dualScreenTop
+
+  const newWindow = window.open(
+    popupOptions.url,
+    popupOptions.title,
+    `scrollbars=${popupOptions.scrollbars ? "yes" : "no"},
+     width=${popupWidth / systemZoom},
+     height=${popupHeight / systemZoom},
+     top=${top},
+     left=${left}`
+  )
+
+  if (newWindow) {
+    newWindow.opener = null
     if (popupOptions.focus) {
-      newWindow!.focus()
+      newWindow.focus()
     }
-    return newWindow
   }
+
+  return newWindow
 }
 
 type MFAEnrollmentProps = {
@@ -195,9 +196,9 @@ export function MFAEnrollmentForm({ factors }: MFAEnrollmentProps) {
 
                           const enrollmentPopupWindow = openPopupWindow({
                             url: ticketUrl!,
-                            title: "SaaStart MFA Enrollment",
-                            width: 450,
-                            height: 720,
+                            title: "Uphold Wallet MFA Enrollment",
+                            width: 420,
+                            height: 680,
                             scrollbars: true,
                             focus: true,
                           })

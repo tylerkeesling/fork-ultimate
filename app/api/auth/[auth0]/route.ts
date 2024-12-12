@@ -11,13 +11,11 @@ const handler = appClient.handleAuth({
     // See: https://nextjs.org/docs/app/building-your-application/routing/route-handlers#url-query-parameters
     // @ts-ignore
     const searchParams = request.nextUrl.searchParams
-    const organization = searchParams.get("organization")
     const invitation = searchParams.get("invitation")
 
     return {
       authorizationParams: {
         // if the user is accepting an invite, we need to forward it to Auth0
-        organization,
         invitation,
       },
       returnTo: "/dashboard/account/tokens",
