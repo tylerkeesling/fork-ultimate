@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator"
 import { SubmitButton } from "@/components/submit-button"
 
 import { createEnrollment, deleteEnrollment } from "./actions"
+import { ToggleMfaForm } from "./toggle-mfa-form"
 
 type MfaEnrollment = {
   name: string
@@ -116,15 +117,19 @@ function openPopupWindow(popupOptions: IPopupWindow): Window | null {
 
 type MFAEnrollmentProps = {
   factors: MfaEnrollment[]
+  enforceMfa?: boolean
 }
 
-export function MFAEnrollmentForm({ factors }: MFAEnrollmentProps) {
+export function MFAEnrollmentForm({ factors, enforceMfa }: MFAEnrollmentProps) {
   const router = useRouter()
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Multi-Factor Authentication</CardTitle>
+        <CardTitle className="flex justify-between">
+          Multi-Factor Authentication
+          <ToggleMfaForm enforceMfa={enforceMfa}/>
+        </CardTitle>
         <CardDescription>
           Manage the MFA enrollments for your account.
         </CardDescription>

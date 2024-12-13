@@ -10,16 +10,22 @@ export default appClient.withPageAuthRequired(
     const session = await appClient.getSession()
     const userId = session?.user.sub
 
-    const [factorsResponse, enrollmentsResponse, sessionsResponse] =
-      await Promise.all([
-        managementClient.guardian.getFactors(),
-        managementClient.users.getAuthenticationMethods({ id: userId }),
-        managementClient.users.getSessions({ user_id: userId }),
-      ])
+    const [
+      factorsResponse,
+      enrollmentsResponse,
+      sessionsResponse,
+      userMetadataResponse,
+    ] = await Promise.all([
+      managementClient.guardian.getFactors(),
+      managementClient.users.getAuthenticationMethods({ id: userId }),
+      managementClient.users.getSessions({ user_id: userId }),
+      managementClient.users.get({ id: userId, fields: "user_metadata" }),
+    ])
 
     const factors = factorsResponse.data
     const enrollments = enrollmentsResponse.data
     const sessions = sessionsResponse.data.sessions
+    const enforceMfa = userMetadataResponse.data.user_metadata?.enforce_mfa
 
     const filteredFactors = factors
       .filter((factor: any) => {
@@ -51,7 +57,7 @@ export default appClient.withPageAuthRequired(
           description="Manage your account's security settings."
         />
 
-        <MFAEnrollmentForm factors={filteredFactors} />
+        <MFAEnrollmentForm enforceMfa={enforceMfa} factors={filteredFactors} />
         <UserSessions user={session!.user} sessions={sessions} />
       </div>
     )

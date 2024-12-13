@@ -108,3 +108,33 @@ export async function deleteSession(formData: FormData) {
     }
   }
 }
+
+export async function toggleMfa(formData: FormData) {
+  const session = await appClient.getSession()
+
+  if (!session) {
+    return redirect("/api/auth/login")
+  }
+
+  const userId = session.user.sub
+
+  let enforceMfa = formData.get("toggle-mfa") === "true"
+
+  const data = {
+    user_metadata: {
+      enforce_mfa: enforceMfa,
+    },
+  }
+  try {
+    console.log(data)
+    await managementClient.users.update({ id: userId }, data)
+
+    revalidatePath("/dashboard/account/security", "layout")
+
+    return {}
+  } catch (error) {
+    return {
+      error: "Failed to toggle MFA.",
+    }
+  }
+}
