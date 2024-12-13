@@ -126,7 +126,6 @@ export async function toggleMfa(formData: FormData) {
     },
   }
   try {
-    console.log(data)
     await managementClient.users.update({ id: userId }, data)
 
     revalidatePath("/dashboard/account/security", "layout")
